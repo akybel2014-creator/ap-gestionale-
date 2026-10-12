@@ -1,0 +1,6 @@
+{
+  "name": "Rossi Impianti — Gestione Impianti Idraulici ed Elettrici",
+  "description": "Web app gestionale per impresa italiana di impianti idraulici, termici ed elettrici a Vicenza. Dashboard cantiere, agenda settimanale tecnici, anagrafica clienti, preventivi, fatture e report direzionali.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

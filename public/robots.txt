@@ -1,0 +1,62 @@
+# AI App Builder — Search Engine & AI Crawler Policy
+# Public localized documentation pages (/it/, /en/, /de/, /fr/) are open to search and AI crawlers.
+# Private owner/admin (/admin), customer workspace (/workspace), and API routes (/api/) are non-indexable and auth-protected.
+
+User-agent: *
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+User-agent: Google-Extended
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+User-agent: GPTBot
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+User-agent: OAI-SearchBot
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+User-agent: ClaudeBot
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+User-agent: PerplexityBot
+Allow: /it/
+Allow: /en/
+Allow: /de/
+Allow: /fr/
+Disallow: /admin
+Disallow: /workspace
+
+Sitemap: https://ais-dev-k4gyngjfyrp32fnuyy2fre-557698667016.us-east1.run.app/sitemap.xml

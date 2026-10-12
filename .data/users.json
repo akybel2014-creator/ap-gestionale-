@@ -1,0 +1,43 @@
+[
+  {
+    "id": "usr_2bf6efd66e572539226a",
+    "name": "Test Developer",
+    "email": "test.dev.1791594544330@example.com",
+    "passwordSalt": "cdd740f31b69c194b783a833c1d30ba8",
+    "passwordHash": "617f292d358bb29afd7e2bfac7206f98e51c84002bb6fb76cdf60a5b6e8d9bf6bf88c4f2d18dee5fe0067b69793dad0affd82b714a15b2478f87f951b6afa612",
+    "emailVerified": true,
+    "createdAt": "2026-10-10T01:09:04.401Z"
+  },
+  {
+    "id": "usr_c1a4a163ae6b5a2fba85",
+    "name": "Test Developer",
+    "email": "test.dev.1791594569314@example.com",
+    "passwordSalt": "bc04c3101039dc513b524de985682507",
+    "passwordHash": "6261c2bf8626f72325c25c7992e0407edcc2addfbeaf2fc53c8803a78c7bc7f3c1b222d5ad2e47957125245a1f1e58f29ad8e22003211977c694015a9668f550",
+    "emailVerified": true,
+    "createdAt": "2026-10-10T01:09:29.362Z",
+    "activeSubscription": {
+      "planId": "free-byok",
+      "billingPeriod": "monthly",
+      "priceIdentifier": "price_free_byok_monthly_v1",
+      "status": "active",
+      "activatedAt": "2026-10-10T01:09:29.426Z"
+    }
+  },
+  {
+    "id": "usr_2c6d61de731121d0ae2f",
+    "name": "ACHILLEDOMENICO BELLOSI",
+    "email": "bellosi2022@gmail.com",
+    "passwordSalt": "d92747d8e6ac20747cf3f808fe094e1a",
+    "passwordHash": "64c5a0ef0658c38006e6624a8208db18617588da97b4a986a839761494d3ddff972aca5b88ec35ca400cebb8f347a4a522369181c8c84c51cf3f4da34744236c",
+    "emailVerified": true,
+    "createdAt": "2026-10-10T11:56:41.337Z",
+    "activeSubscription": {
+      "planId": "free-byok",
+      "billingPeriod": "monthly",
+      "priceIdentifier": "price_free_byok_monthly_v1",
+      "status": "active",
+      "activatedAt": "2026-10-10T14:54:33.315Z"
+    }
+  }
+]

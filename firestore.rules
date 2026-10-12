@@ -1,0 +1,292 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. Hardened Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email_verified == true && request.auth.token.email == 'bellosi2022@gmail.com')
+      );
+    }
+
+    // 2. Entity Validation Blueprints
+    function isValidProject(data, projectId) {
+      return data.keys().hasAll([
+          'id',
+          'ownerUid',
+          'userId',
+          'name',
+          'description',
+          'type',
+          'status',
+          'codeVersion',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'ownerUid',
+          'userId',
+          'name',
+          'description',
+          'type',
+          'status',
+          'previewHtml',
+          'codeVersion',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.id == projectId &&
+        isValidId(data.id) &&
+        data.ownerUid == request.auth.uid &&
+        isValidId(data.ownerUid) &&
+        isValidId(data.userId) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 60 &&
+        data.description is string && data.description.size() >= 1 && data.description.size() <= 2000 &&
+        data.type is string && data.type.size() <= 32 &&
+        data.type in ['website', 'web-app', 'landing-page', 'ecommerce', 'dashboard', 'portfolio', 'blog', 'other'] &&
+        data.status is string && data.status.size() <= 32 &&
+        data.status in ['draft', 'generating', 'generated', 'error'] &&
+        (!('previewHtml' in data) || (data.previewHtml is string && data.previewHtml.size() <= 250000)) &&
+        data.codeVersion is string && data.codeVersion.size() >= 1 && data.codeVersion.size() <= 64 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidActivityLog(data, logId) {
+      return data.keys().hasAll([
+          'id',
+          'ownerUid',
+          'projectId',
+          'projectName',
+          'userId',
+          'instructionText',
+          'status',
+          'type',
+          'activityType',
+          'timestamp',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'ownerUid',
+          'projectId',
+          'projectName',
+          'userId',
+          'instructionText',
+          'status',
+          'type',
+          'activityType',
+          'codeVersion',
+          'timestamp',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.id == logId &&
+        isValidId(data.id) &&
+        data.ownerUid == request.auth.uid &&
+        isValidId(data.ownerUid) &&
+        isValidId(data.projectId) &&
+        data.projectName is string && data.projectName.size() >= 1 && data.projectName.size() <= 60 &&
+        isValidId(data.userId) &&
+        data.instructionText is string && data.instructionText.size() >= 1 && data.instructionText.size() <= 1000 &&
+        data.status is string && data.status.size() <= 32 &&
+        data.status in ['recorded', 'generating', 'generated', 'exported', 'error'] &&
+        data.type is string && data.type.size() <= 32 &&
+        data.type in ['INSTRUCTION', 'EXPORT', 'EXPORT_PROJECT'] &&
+        data.activityType is string && data.activityType.size() <= 32 &&
+        data.activityType in ['instruction', 'INSTRUCTION', 'export', 'EXPORT', 'EXPORT_PROJECT'] &&
+        (!('codeVersion' in data) || (data.codeVersion is string && data.codeVersion.size() >= 1 && data.codeVersion.size() <= 64)) &&
+        data.timestamp is string && data.timestamp.size() >= 1 && data.timestamp.size() <= 64 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAdmin(data, adminId) {
+      return data.keys().hasAll(['uid', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'role', 'createdAt']) &&
+        data.uid == adminId &&
+        isValidId(data.uid) &&
+        data.role is string && data.role.size() <= 16 &&
+        data.role == 'admin' &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll([
+          'uid',
+          'appUserId',
+          'displayName',
+          'email',
+          'planId',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'uid',
+          'appUserId',
+          'displayName',
+          'email',
+          'planId',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        data.uid == userId &&
+        data.uid == request.auth.uid &&
+        isValidId(data.uid) &&
+        isValidId(data.appUserId) &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 120 &&
+        data.email == request.auth.token.email &&
+        data.planId is string && data.planId.size() <= 32 &&
+        data.planId in ['free-byok', 'pro-placeholder', 'team-placeholder'] &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // 3. Collection Match Blocks
+    match /projects/{projectId} {
+      allow get: if isSignedIn() && isValidId(projectId) && (existing().ownerUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.ownerUid == request.auth.uid || isAdmin());
+
+      allow create: if isVerifiedUser() &&
+        isValidId(projectId) &&
+        isValidProject(incoming(), projectId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(projectId) &&
+        isValidProject(incoming(), projectId) &&
+        existing().ownerUid == request.auth.uid &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().id == existing().id &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          // Action 1: Update project metadata, status, or generated preview
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'name',
+            'description',
+            'type',
+            'status',
+            'previewHtml',
+            'codeVersion',
+            'updatedAt'
+          ])
+        );
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(projectId) &&
+        (existing().ownerUid == request.auth.uid || isAdmin());
+    }
+
+    match /activity_logs/{logId} {
+      allow get: if isSignedIn() && isValidId(logId) && (existing().ownerUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.ownerUid == request.auth.uid || isAdmin());
+
+      allow create: if isVerifiedUser() &&
+        isValidId(logId) &&
+        isValidActivityLog(incoming(), logId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/projects/$(incoming().projectId)) &&
+        get(/databases/$(database)/documents/projects/$(incoming().projectId)).data.ownerUid == request.auth.uid;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(logId) &&
+        isValidActivityLog(incoming(), logId) &&
+        existing().ownerUid == request.auth.uid &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().id == existing().id &&
+        incoming().projectId == existing().projectId &&
+        incoming().userId == existing().userId &&
+        incoming().timestamp == existing().timestamp &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          // Action 1: Update activity status or codeVersion (only if not yet in terminal 'exported' state)
+          (
+            existing().status != 'exported' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'codeVersion', 'updatedAt'])
+          )
+        );
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(logId) &&
+        (existing().ownerUid == request.auth.uid || isAdmin());
+    }
+
+    match /admins/{adminId} {
+      allow get: if isSignedIn() && isValidId(adminId) && (request.auth.uid == adminId || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if isAdmin() &&
+        isValidId(adminId) &&
+        isValidAdmin(incoming(), adminId) &&
+        incoming().createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isAdmin() && isValidId(adminId);
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && (request.auth.uid == userId || isAdmin());
+      allow list: if isSignedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+
+      allow create: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (incoming().planId == 'free-byok' || isAdmin());
+
+      allow update: if isVerifiedUser() &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        existing().uid == request.auth.uid &&
+        incoming().uid == existing().uid &&
+        incoming().email == existing().email &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          isAdmin() ||
+          (
+            incoming().planId == existing().planId &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['appUserId', 'displayName', 'updatedAt'])
+          )
+        );
+
+      allow delete: if isVerifiedUser() &&
+        isValidId(userId) &&
+        (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

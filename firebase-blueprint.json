@@ -1,0 +1,302 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "An AI App Builder project workspace stored in Cloud Firestore and synchronized across devices.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique project identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user who owns this project.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Application-level user identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable name of the project.",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the project.",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "type": {
+          "type": "string",
+          "description": "Project category type.",
+          "enum": [
+            "website",
+            "web-app",
+            "landing-page",
+            "ecommerce",
+            "dashboard",
+            "portfolio",
+            "blog",
+            "other"
+          ],
+          "maxLength": 32
+        },
+        "status": {
+          "type": "string",
+          "description": "Current generation status of the project.",
+          "enum": ["draft", "generating", "generated", "error"],
+          "maxLength": 32
+        },
+        "previewHtml": {
+          "type": "string",
+          "description": "Generated HTML preview string (bounded to 250KB).",
+          "maxLength": 250000
+        },
+        "codeVersion": {
+          "type": "string",
+          "description": "Deterministic code version hash reference.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the project was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the project was last updated."
+        }
+      },
+      "required": [
+        "id",
+        "ownerUid",
+        "userId",
+        "name",
+        "description",
+        "type",
+        "status",
+        "codeVersion",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "An activity log entry (instruction or export event) belonging to a project and user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique activity log entry identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user who owns this activity log entry.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Parent project ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "projectName": {
+          "type": "string",
+          "description": "Project name snapshot.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "userId": {
+          "type": "string",
+          "description": "Application-level user identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "instructionText": {
+          "type": "string",
+          "description": "Sanitized instruction text or export summary.",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the activity entry.",
+          "enum": ["recorded", "generating", "generated", "exported", "error"],
+          "maxLength": 32
+        },
+        "type": {
+          "type": "string",
+          "description": "Canonical activity classification.",
+          "enum": ["INSTRUCTION", "EXPORT", "EXPORT_PROJECT"],
+          "maxLength": 32
+        },
+        "activityType": {
+          "type": "string",
+          "description": "Normalized activity type.",
+          "enum": ["instruction", "INSTRUCTION", "export", "EXPORT", "EXPORT_PROJECT"],
+          "maxLength": 32
+        },
+        "codeVersion": {
+          "type": "string",
+          "description": "Code version reference associated with this activity.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO timestamp string of the activity.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the log entry was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the log entry was updated."
+        }
+      },
+      "required": [
+        "id",
+        "ownerUid",
+        "projectId",
+        "projectName",
+        "userId",
+        "instructionText",
+        "status",
+        "type",
+        "activityType",
+        "timestamp",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Administrator registry document keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "role": {
+          "type": "string",
+          "description": "Admin role designation.",
+          "enum": ["admin"],
+          "maxLength": 16
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the admin record was created."
+        }
+      },
+      "required": ["uid", "role", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private user account profile keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "appUserId": {
+          "type": "string",
+          "description": "Application-level user identifier linked to this Firebase user.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the authenticated user.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified email address of the user.",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "planId": {
+          "type": "string",
+          "description": "Active subscription tier identifier.",
+          "enum": ["free-byok", "pro-placeholder", "team-placeholder"],
+          "maxLength": 32
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was first created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the profile was last updated."
+        }
+      },
+      "required": [
+        "uid",
+        "appUserId",
+        "displayName",
+        "email",
+        "planId",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Stores customer and admin application projects synchronized in the cloud."
+    },
+    "/activity_logs/{logId}": {
+      "schema": "ActivityLog",
+      "description": "Stores project instruction and export activity logs synchronized in the cloud."
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Stores verified administrator UIDs for role-based access control."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Stores private user profile and subscription metadata isolated to each user."
+    }
+  }
+}

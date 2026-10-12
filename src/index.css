@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+  }
+
+  /* Impedisce l'overflow involontario di elementi multimediali e vettoriali */
+  img, svg, canvas, video, iframe {
+    max-width: 100%;
+  }
+
+  body {
+    @apply bg-[#0f1720] text-[#f1f5f9] font-sans;
+  }
+
+  h1, h2, h3, .font-display {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    @apply bg-[#f59e0b]/30 text-white;
+  }
+}
+
+/* Protezione globale contro il collasso o l'overflow orizzontale nei container Flexbox/Grid */
+@layer components {
+  .gestionale-grid > *,
+  .gestionale-flex > * {
+    min-width: 0;
+  }
+
+  /* Assicura che i container grafici Recharts e le modali non provochino overflow */
+  .recharts-responsive-container {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(245, 158, 11, 0.35) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(245, 158, 11, 0.35);
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(245, 158, 11, 0.6);
+  }
+}
