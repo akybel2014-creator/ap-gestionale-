@@ -18,7 +18,6 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowRight,
-  AlertTriangle,
 } from 'lucide-react';
 import {
   getSettimanaCorrente,

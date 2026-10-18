@@ -5,10 +5,6 @@ import {
   Search,
   Filter,
   CheckCircle2,
-  Clock,
-  AlertTriangle,
-  RotateCcw,
-  Wrench,
   User,
   Phone,
   MapPin,
@@ -16,8 +12,6 @@ import {
   Edit3,
   Trash2,
   BellRing,
-  ArrowRight,
-  ShieldCheck,
   Zap,
   Flame,
   Wind,
@@ -445,6 +439,19 @@ export default function GestioneManutenzioni({
                 👷 {t.nome}
               </option>
             ))}
+          </select>
+
+          {/* Filtro Tipo Impianto */}
+          <select
+            value={filtroTipoImpianto}
+            onChange={(e) => setFiltroTipoImpianto(e.target.value)}
+            aria-label="Filtra per tipo impianto"
+            className="px-3 py-1.5 rounded-xl bg-[#0f1720] border border-[#2a3a4f] text-[#f1f5f9] font-bold text-xs focus:outline-none focus:border-[#f59e0b] min-h-[34px]"
+          >
+            <option value="Tutti">Tutti gli impianti</option>
+            <option value="Idraulico / Termico">🔥 Idraulico / Termico</option>
+            <option value="Elettrico">⚡ Elettrico</option>
+            <option value="Climatizzazione">❄️ Climatizzazione</option>
           </select>
         </div>
       </div>
